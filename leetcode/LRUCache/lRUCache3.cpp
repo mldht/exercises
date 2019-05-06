@@ -47,7 +47,16 @@ struct HashNode
 	int key;
 	struct Record *value;
 	struct HashNode *next;	
+public:
+	HashNode(int key, struct Record* value);
 };
+
+HashNode::HashNode(int key, struct Record * value)
+{
+	this->key = key;
+	this->value = value;
+	this->next = NULL;
+}
 
 class HashMap
 {
@@ -87,9 +96,7 @@ struct HashNode * HashMap::Find(int key)
 
 void HashMap::Insert(int key, struct Record *value)
 {
-	struct HashNode *tmp = new HashNode;
-	tmp->key = key;
-	tmp->value = value;
+	struct HashNode *tmp = new HashNode(key, value);
 	int index = key%capacity;
 	if(map[index] == NULL)
 	{
@@ -123,7 +130,7 @@ void HashMap::Delete(int key)
 
 	if(iter->next)
 	{
-		iter = iter->next->next;
+		iter->next = iter->next->next;
 	}
 }
 
@@ -142,11 +149,13 @@ private:
 	struct Record *tail;
 	int capacity;
 	int size;
-	std::unordered_map<int, struct Record *> hash_map;
+//	std::unordered_map<int, struct Record *> hash_map;
+	HashMap hash_map;
 	MemoryPool *memPool;
 };
 
-Queue::Queue(int capacity)
+Queue::Queue(int capacity):
+hash_map(capacity)
 {
 	//head = tail = NULL;
 	this->capacity = capacity;
@@ -177,10 +186,10 @@ void Queue::m_MoveToHead(struct Record *item)
 
 void Queue::Put(int key, int value)
 {
-	auto iter = hash_map.find(key);
-	if(iter != hash_map.end())
+	auto iter = hash_map.Find(key);
+	if(iter != NULL)
 	{
-		struct Record * tmp = iter->second;
+		struct Record * tmp = iter->value;
 		tmp->value = value;
 		m_Unlink(tmp);
 		m_MoveToHead(tmp);
@@ -195,22 +204,23 @@ void Queue::Put(int key, int value)
 	else
 	{
 		tmp = tail->prev;
-		hash_map.erase(tmp->key);
+		hash_map.Delete(tmp->key);
 		m_Unlink(tmp);
 		tmp->key = key;
 		tmp->value = value;
 	}
 
 	m_MoveToHead(tmp);
-	hash_map[key] = tmp;
+	//hash_map[key] = tmp;
+	hash_map.Insert(key, tmp);
 }
 
 int Queue::Get(int key)
 {
-	auto iter = hash_map.find(key);
-	if( iter != hash_map.end())
+	auto iter = hash_map.Find(key);
+	if( iter != NULL)
 	{
-		struct Record *item = iter->second;
+		struct Record *item = iter->value;
 		m_Unlink(item);
 		m_MoveToHead(item);
 		return item->value;

@@ -42,6 +42,91 @@ struct Record * MemoryPool::Get(int key, int value)
 	return NULL;
 }
 
+struct HashNode
+{
+	int key;
+	struct Record *value;
+	struct HashNode *next;	
+};
+
+class HashMap
+{
+public:
+	HashMap(int capacity );
+	void Insert(int key, struct Record *value);
+	void Delete(int key);
+	struct HashNode * Find(int key);
+private:
+	struct HashNode **map;
+	int capacity;
+};
+
+HashMap::HashMap(int capacity)
+{
+	map = new struct HashNode *[capacity];
+	int i;
+	for(i = 0; i < capacity; ++i)
+	{
+		map[i] = NULL;
+	}
+
+	this->capacity = capacity;	
+}
+
+struct HashNode * HashMap::Find(int key)
+{
+	int index = key % capacity;
+	struct HashNode *iter = map[index];
+	while(iter && iter->key != key)
+	{
+		iter = iter->next;
+	}
+
+	return iter;
+}
+
+void HashMap::Insert(int key, struct Record *value)
+{
+	struct HashNode *tmp = new HashNode;
+	tmp->key = key;
+	tmp->value = value;
+	int index = key%capacity;
+	if(map[index] == NULL)
+	{
+		map[index] = tmp;
+	}
+	else
+	{
+		struct HashNode * iter = map[index];
+		while(iter->next)
+		{
+			iter = iter->next;
+		}
+	
+		iter->next = tmp;
+	}
+}
+
+void HashMap::Delete(int key)
+{
+	int index = key %capacity;
+	struct HashNode *iter = map[index];
+	if( iter && iter->key == key)
+	{
+		map[index] = map[index]->next;
+		return;
+	}
+	while(iter->next && iter->next->key != key)
+	{
+		iter = iter->next;
+	}
+
+	if(iter->next)
+	{
+		iter = iter->next->next;
+	}
+}
+
 class Queue
 {
 public:

@@ -117,7 +117,124 @@ void trieFree(Trie* obj) {
 	free(obj);   
 }
 
+//////////////////////////////////////////////////////////////////////
 
+#define MAX_WORD_LEN	15
+
+int mystrcpy(char *source, char *dest)
+{
+	int i = 0;
+	while( i < MAX_WORD_LEN -1 && *source != '\0')
+	{
+		dest[i++] = *(source++);
+	}
+	dest[i] = '\0';
+
+	return i;
+}
+
+int mystrcmp( char *str1, char *str2)
+{
+	while(*str1 != '\0' && *str2 != '\0')
+	{
+		if( *str1 > *str2)
+		{
+			return 1;
+		}
+		else if( *str1 < *str2)
+		{
+			return -1;
+		}
+		else
+		{
+			++str1;
+			++str2;
+		}
+	}
+
+	return *str1 - *str2;
+}
+
+struct word
+{
+	char *word;
+	int freq;
+};
+
+struct word g_queue[100];
+int size;
+
+void pushWords(char *word, int freq)
+{
+	int idx = size -1;
+	while(idx >= 0)
+	{
+		if(g_queue[idx].freq < freq ||g_queue[idx].freq == freq && mystrcmp(g_queue[idx].word, word) < 0)
+		{
+			g_queue[idx+1] = g_queue[idx];
+			--idx;
+		}
+		else
+		{
+			break;
+		}
+	}	
+
+	g_queue[idx+1].word = word;
+	g_queue[idx+1].freq = freq;
+	++size;
+}
+
+void FindMatchedWords(Trie *obj, char *prefix)
+{
+	int i;
+	for(i = 0; i < 26; ++i)
+	{
+		if(obj->next[i] != NULL)
+		{
+			char tmp[MAX_WORD_LEN+1];
+			int len = mystrcpy(prefix, tmp);
+			tmp[len] = obj->next[i]->c;
+			tmp[len+1] = '\0';	
+			FindMatchedWords(obj->next[i], tmp);
+		}
+	}
+
+	if(obj->is_word)
+	{
+		char *tmp = malloc(MAX_WORD_LEN);
+		mystrcpy(prefix, tmp);
+		pushWords(tmp, obj->freq);
+	}
+}
+
+
+int trieMatchPrefixWords(Trie * obj, char *prefix, char words[5][MAX_WORD_LEN+1])
+{
+	char *str = prefix;
+	while(*str != '\0')
+	{
+		int idx = *str - 'a';
+		if(obj->next[idx] == NULL)
+		{
+			return 0;
+		}
+
+		++str;
+		obj = obj->next[idx];
+	}
+
+	FindMatchedWords(obj, prefix);
+
+	int count = size > 5 ? 5: size;
+	int i;	
+	for(i = 0; i < count; ++i)
+	{
+		mystrcpy(g_queue[i].word, words[i]);
+	}
+
+	return count;
+}
 
 /**
  * Your Trie struct will be instantiated and called as such:

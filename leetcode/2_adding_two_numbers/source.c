@@ -16,18 +16,18 @@ int main(void)
 
 	struct ListNode *iter = 0;
 	iter = (struct ListNode*)malloc(sizeof(struct ListNode));
-	iter->val = 5;
+	iter->val = 2;
 	iter->next = 0;
 	l1 = iter;
 	
-/*	iter->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+	iter->next = (struct ListNode*)malloc(sizeof(struct ListNode));
 	iter->next->val = 4;
 	iter = iter->next;
 
 	iter->next = (struct ListNode*)malloc(sizeof(struct ListNode));
 	iter->next->val = 3;
 	iter->next->next = 0;
-*/
+
 
 	iter = 0;
 
@@ -36,14 +36,14 @@ int main(void)
 	iter->next = 0;
 	l2 = iter;
 	
-/*	iter->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+	iter->next = (struct ListNode*)malloc(sizeof(struct ListNode));
 	iter->next->val = 6;
 	iter = iter->next;
 
 	iter->next = (struct ListNode*)malloc(sizeof(struct ListNode));
 	iter->next ->val = 4;
 	iter->next->next = 0;
-*/
+
 	struct ListNode *ret = addTwoNumbers(l1,l2);
 
 	return 0;
@@ -64,7 +64,7 @@ struct ListNode *getNode(int val)
 {
 	if( g_index >= g_size)
 	{
-		g_pool = realloc(g_pool, 2 * g_size);
+		g_pool = (struct ListNode *)realloc(g_pool, 2 * g_size);
 		g_size *= 2;
 	}
 	struct ListNode *ret = g_pool + g_index++;
@@ -76,51 +76,65 @@ struct ListNode *getNode(int val)
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
 
 	int adding = 0;
-	struct ListNode *ret = 0;
-	struct ListNode *iter = 0;
 	initMem(1024);
-	while(l1 || l2 || adding)
+	struct ListNode *head = getNode(-1);
+	struct ListNode *iter = head;
+	while(l1 && l2)
 	{
 		int val = 0;
-		if(l1)
-		{
-			val += l1->val;
-		}
-
-		if(l2)
-		{
-			val += l2->val;
-		}
-
+		val += l1->val;
+		val += l2->val;
 		val += adding;
 
 		adding = val/10;
 		val = val %10;		
 
 		struct ListNode *p = getNode(val);
-		if(!iter)
-		{
-			iter = p;
-			ret = p;
-		}
-		else
-		{
-			iter->next = p;
-			iter = p;
-		}
-
-		if(l1)
-		{
-			l1 = l1->next;
-		}
-
-		if(l2)
-		{
-			l2 = l2->next;
-		}
-
+	
+		iter->next = p;
+		iter = p;
+		l1 = l1->next;
+		l2 = l2->next;
 	}
 
-	return ret;
+	while(l1)
+	{
+		int val = 0;
+		val += l1->val;	
+		val += adding;
+
+		adding = val/10;
+		val = val %10;	
+
+		struct ListNode *p = getNode(val);
+	
+		iter->next = p;
+		iter = p;
+		l1 = l1->next;			
+	}
+
+	while(l2)
+	{
+		int val = 0;
+		val += l2->val;	
+		val += adding;
+
+		adding = val/10;
+		val = val %10;	
+
+		struct ListNode *p = getNode(val);
+	
+		iter->next = p;
+		iter = p;
+		l2 = l2->next;			
+	}	
+
+	if(adding)
+	{
+		struct ListNode *p = getNode(1);
+		iter->next = p;
+		adding = 0;
+	}
+	return head->next;
 }
 

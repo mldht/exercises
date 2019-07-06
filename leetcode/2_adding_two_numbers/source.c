@@ -75,6 +75,14 @@ struct ListNode *getNode(int val)
 
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
 
+	if(!l1)
+	{
+		return l2;
+	}
+	if(!l2)
+	{
+		return l1;
+	}
 	int adding = 0;
 	initMem(1024);
 	struct ListNode *head = getNode(-1);

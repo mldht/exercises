@@ -93,13 +93,10 @@ struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
 		}
 
 		val += adding;
-		adding = 0;
-		if(val > 9)
-		{
-			adding = 1;
-			val = val %10;
-		}
-		
+
+		adding = val/10;
+		val = val %10;		
+
 		struct ListNode *p = getNode(val);
 		if(!iter)
 		{

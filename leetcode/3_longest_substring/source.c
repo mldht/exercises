@@ -1,44 +1,39 @@
 
-int count[255];
-
-int myStrLen(char *s)
+int getStrLen(char *s)
 {
-	char *str = s;
-	while(*str != '\0')
+	int i = 0;
+	while( *(s+i) != '\0')
 	{
-		++str;
+		++i;
 	}
-
-	return str-s;
+	
+	return i;
 }
-
 
 int lengthOfLongestSubstring(char * s){
 
-	int i,j;
+	int i = 0, j = 0;
+	int k;
+	int len = getStrLen(s);
 	int maxlen = 0;
-	int len = myStrLen(s);
-	for(i = 0; i < len; ++i)
+	char set[256] = {0,};
+
+	while( i <= j && j < len)
 	{
-		int k;
-		for(k = 0; k < 255; ++k)
+		if( set[ s[j] ] == 0)
 		{
-			count[k] = 0;
-		}
-		for(j = i; j < len; ++j)
-		{
-			if(count[s[j]] > 0)
+			set [s[j] ] = 1;
+			if(maxlen < j -i+1)
 			{
-				maxlen = (maxlen < j - i) ? j - i : maxlen;
-				break;		
+				maxlen = j - i+1;	
 			}
 
-			count[s[j]]++;
-		}	
-
-		if(j == len)
+			++j;
+		}
+		else
 		{
-			maxlen = (maxlen < j-i) ? j-i: maxlen;
+			set[s[i]] = 0;
+			++i;
 		}
 	}
 
@@ -47,6 +42,11 @@ int lengthOfLongestSubstring(char * s){
 
 int main(void)
 {
-	int len = lengthOfLongestSubstring(" ");
+	char *str = "abcabcbb";
+	int len = lengthOfLongestSubstring(str);
+	 str ="bbbbb";
+	len = lengthOfLongestSubstring(str);
 	return 0;
+
 }
+

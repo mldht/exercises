@@ -54,19 +54,24 @@ int pop(void)
 	}
 
 	g_queue[i] = check;
+	return ret;
 }
 
 int findKthLargest(int* nums, int numsSize, int k){
 	
-	init(k);
+	init(k+1);
 
 	int i;
-	for(i = 0; i < k; ++i)
+	for(i = 0; i < numsSize; ++i)
 	{
 		push(nums[i]);
+		if(g_size > k)
+		{
+			pop();
+		}
 	}
 
-	for(i = k; i < numsSize; ++i)
+/*	for(i = k; i < numsSize; ++i)
 	{
 		if(g_queue[0] < nums[i])
 		{
@@ -74,7 +79,7 @@ int findKthLargest(int* nums, int numsSize, int k){
 			push(nums[i]);			
 		}
 	}
-
+*/
 	return g_queue[0];
 
 }

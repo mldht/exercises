@@ -32,8 +32,11 @@ int lengthOfLongestSubstring(char * s){
 		}
 		else
 		{
-			set[s[i]] = 0;
-			++i;
+			while(s[i++] != s[j] )
+			{
+				set[ s[i] ] = 0;
+			}
+			++j;
 		}
 	}
 
@@ -44,7 +47,7 @@ int main(void)
 {
 	char *str = "abcabcbb";
 	int len = lengthOfLongestSubstring(str);
-	 str ="bbbbb";
+	str ="pwwkew";
 	len = lengthOfLongestSubstring(str);
 	return 0;
 
